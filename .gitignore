@@ -1,0 +1,41 @@
+# virtualenv
+venv/
+
+# Packaging
+*.pyc
+__pycache__
+*.egg-info
+/dist/
+/build/
+/node_modules/
+
+
+# Temporary/OS files
+*.swp
+*.swo
+*.*~
+.~lock.*
+*.DS_Store
+.python-version
+*.mmdb
+
+# log file
+*.log
+
+# pickle file
+*.pickle
+
+
+# IDE files
+.project
+.pydevproject
+.settings
+.idea
+.vscode
+
+# db files
+*.sqlite3
+
+# config yaml file
+config.yaml
+.env
