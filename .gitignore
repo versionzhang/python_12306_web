@@ -39,3 +39,6 @@ __pycache__
 # config yaml file
 config.yaml
 .env
+
+# public
+python12306_web/public

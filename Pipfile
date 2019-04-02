@@ -6,6 +6,12 @@ name = "pypi"
 [packages]
 ipython = "*"
 django-environ = "*"
+pyyaml = "*"
+psycopg2-binary = "*"
+unicode-slugify = {git = "https://github.com/mozilla/unicode-slugify.git"}
+py12306 = {git = "https://github.com/versionzhang/python_12306"}
+whitenoise = "*"
+django-widget-tweaks = "*"
 
 [dev-packages]
 
