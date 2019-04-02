@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block style %}
+    <link href="{% static 'css/login.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block body_html %}
+    <body id="LoginForm">
+        <div class="container">
+            <h1 class="form-heading">Logout</h1>
+            <div class="login-form">
+                <div class="main-div">
+
+                    <div class="panel">
+                        <h2>Admin Logout</h2>
+                        <p>You have been logout.</p>
+                        <a href="/accounts/login/">Log In with your account.</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+{% endblock %}
