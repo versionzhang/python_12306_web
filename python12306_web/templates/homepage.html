@@ -21,6 +21,11 @@
                 margin-right: 0;
                 margin-bottom: 0;
             }
+
+            .el-button a, a:hover, a:focus, a:focus-within, a:active, a:visited {
+                color: inherit;
+            }
+
         </style>
 
     {% endblock %}
@@ -32,6 +37,17 @@
             <el-header>
                 <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
                     <el-menu-item index="1">任务列表</el-menu-item>
+                    <el-row style="width: 50%; margin-right: 0; float: right">
+                        {% if not request.user.is_authenticated %}
+                            <el-button type="primary" style="float:right; text-align: right; font-size: 12px; margin-top: 10px">
+                                <a href="/accounts/login/" style="text-decoration: none;">登录</a>
+                            </el-button>
+                        {% else %}
+                            <el-button type="primary" style="float:right; text-align: right; font-size: 12px; margin-top: 10px;">
+                                <a href="/accounts/logout/" style="text-decoration: none;">注销</a>
+                            </el-button>
+                        {% endif %}
+                    </el-row>
                 </el-menu>
             </el-header>
 
