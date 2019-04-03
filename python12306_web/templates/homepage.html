@@ -1,31 +1,209 @@
 {% extends 'base.html' %}
+{% load static %}
 
+    {% block statics_file %}
+        <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+
+        <script src="{% static 'js/jquery.min.js' %}"></script>
+        <script src="https://unpkg.com/vue/dist/vue.js"></script>
+        <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+        <style>
+            .task-table-expand {
+                font-size: 0;
+            }
+
+            .task-table-expand label {
+                width: 100px;
+                color: #99a9bf;
+            }
+
+            .task-table-expand .el-form-item {
+                margin-right: 0;
+                margin-bottom: 0;
+            }
+        </style>
+
+    {% endblock %}
 {% block body_html %}
     <body>
-    <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
-        <h5 class="my-0 mr-md-auto font-weight-normal">
-            <a class="p-2 text-dark" href="/">python12306web管理后台</a>
-        </h5>
-        {% if request.user.is_authenticated %}
-            <a class="btn btn-outline-primary" href="/accounts/logout/">注销</a>
-        {% else %}
-            <a class="btn btn-outline-primary" href="/accounts/login/">登录</a>
-        {% endif %}
-    </div>
+    {% csrf_token %}
+    <div id="app">
+        <el-container>
+            <el-header>
+                <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
+                    <el-menu-item index="1">任务列表</el-menu-item>
+                </el-menu>
+            </el-header>
 
-    <div class="container" style="height: 100%">
-        <div class="row">
-            <div class="col-12">
-
-                <div class="filter-part">
-
-                </div>
-
-                <div class="charts-part">
-
-                </div>
-            </div>
-        </div>
+            <el-main>
+                <el-table
+                        :data="tableData"
+                        style="width: 100%" ref="table">
+                    <el-table-column type="expand">
+                        <template slot-scope="props">
+                            <el-form label-position="left" width="100%" class="task-table-expand">
+                                <el-form-item label="任务配置">
+                                    <span>[[ props.row.config ]]</span>
+                                </el-form-item>
+                                <el-form-item label="任务创建时间">
+                                    <span>[[ props.row.c_time ]]</span>
+                                </el-form-item>
+                                <el-form-item label="任务修改时间">
+                                    <span>[[ props.row.m_time ]]</span>
+                                </el-form-item>
+                                <el-form-item label="实时日志显示" size="large" ref="logshow">
+                                        <el-input
+                                                type="textarea"
+                                                :rows="20"
+                                                placeholder=""
+                                                v-model="props.row.log">
+                                        </el-input>
+                                </el-form-item>
+                            </el-form>
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                            label="tasks ID"
+                            prop="id">
+                    </el-table-column>
+                    <el-table-column
+                            label="描述"
+                            prop="name">
+                    </el-table-column>
+                    <el-table-column
+                            label="配置"
+                            prop="config.name">
+                    </el-table-column>
+                    <el-table-column
+                            label="代理"
+                            prop="proxy">
+                    </el-table-column>
+                    <el-table-column
+                            label="status"
+                            prop="status">
+                    </el-table-column>
+                    <el-table-column
+                            label="pid"
+                            prop="pid">
+                    </el-table-column>
+                    <el-table-column
+                            label="创建时间"
+                            prop="c_name">
+                    </el-table-column>
+                    <el-table-column
+                            fixed="right"
+                            label="操作"
+                            width="100">
+                        <template slot-scope="scope">
+                            <el-button @click="handleStart(scope.row)" type="text" size="small" v-show="scope.row.status == 'pending'">
+                                运行
+                            </el-button>
+                            <el-button @click="handleStop(scope.row)" type="text" size="small"
+                                       v-show="scope.row.status == 'running'">
+                                停止
+                            </el-button>
+                            <el-button @click="handleRefresh(scope.row)" type="text" size="small"
+                                       v-show="scope.row.status == 'running'">
+                                获取运行日志
+                            </el-button>
+                            <el-button @click="handleEdit(scope.row)" type="text" size="small">
+                                编辑
+                            </el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </el-main>
+        </el-container>
     </div>
     </body>
+    <!-- import Vue before Element -->
+    <script>
+        var app = new Vue({
+            el: '#app',
+            delimiters: ['[[', ']]'],
+            data: function () {
+                return {
+                        activeIndex: '1',
+                    tableData: []
+                    };
+            },
+            mounted: function() {
+                that = this;
+                $.ajax({
+                    type: 'GET',
+                    url: 'webadmin/tasks/',
+                    contentType: "application/json",
+                    success: function (data) {
+                        that.tableData = data;
+                    }
+                });
+            },
+            methods: {
+                handleSelect(key, keyPath) {
+                },
+                handleStart(row) {
+                    that = this;
+                    $.ajax({
+                        type: 'POST',
+                        url: 'webadmin/tasks/' + row.id + '/run_tasks/',
+                        contentType: "application/json",
+                        beforeSend: function (xhr, settings) {
+                            var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+                            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                        },
+                        success: function (data) {
+                            that.$alert(data.msg, '提示信息', {
+                                confirmButtonText: '确定',
+                                callback: action => {
+                                    window.location.reload(true);
+                                }
+                            });
+                        }
+                    });
+                },
+                handleStop(row) {
+                    $.ajax({
+                        type: 'POST',
+                        url: 'webadmin/tasks/' + row.id + '/stop_tasks/',
+                        contentType: "application/json",
+                        beforeSend: function (xhr, settings) {
+                            var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+                            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                        },
+                        success: function (data) {
+                            that.$alert(data.msg, '提示信息', {
+                                confirmButtonText: '确定',
+                                callback: action => {
+                                    window.location.reload(true);
+                                }
+                            });
+                        }
+                    });
+                },
+                handleRefresh(row) {
+                    this.$refs.table.toggleRowExpansion(row, true);
+                    $.ajax({
+                        type: 'GET',
+                        url: 'webadmin/tasks/' + row.id + '/tasks_logs/',
+                        contentType: "application/json",
+                        beforeSend: function (xhr, settings) {
+                            var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+                            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                        },
+                        success: function (data) {
+                            if (data.status == 0) {
+                                row.log = data.msg;
+                                }
+                        }
+                    });
+                },
+                handleEdit(row) {
+                    window.open(
+                        '/admin/webadmin/buytasks/' + row.id + '/change/',
+                        '_blank'
+                    );
+                }
+            }
+        })
+    </script>
 {% endblock %}

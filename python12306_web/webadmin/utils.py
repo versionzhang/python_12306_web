@@ -1,4 +1,5 @@
 import os
+import platform
 import subprocess
 
 from slugify import slugify
@@ -40,18 +41,27 @@ class TasksManagerUtil(object):
     def run(self):
         self.generator_folder()
         self.write_to_config_file()
+        kwargs = {}
+        if platform.system() == 'Windows':
+            # from msdn [1]
+            CREATE_NEW_PROCESS_GROUP = 0x00000200  # note: could get it from subprocess
+            DETACHED_PROCESS = 0x00000008  # 0x8 | 0x200 == 0x208
+            kwargs.update(creationflags=DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP)
+        else:  # Python 3.5+ and Unix
+            kwargs.update(start_new_session=True)
+
         if self.task_obj.proxy:
             return subprocess.Popen("export https_proxy={proxy_url} && cd {folder_name} && py12306".format(
                 proxy_url=self.task_obj.proxy.proxy_url,
                 folder_name=self.generator_folder_name
-            ), shell=True, stdout=open(self.log_file_path, "w"))
+            ), shell=True, stdout=open(self.log_file_path, "w"), **kwargs)
         else:
             return subprocess.Popen("cd {folder_name} && py12306".format(
                 folder_name=self.generator_folder_name
-            ), shell=True, stdout=open(self.log_file_path, "w"))
+            ), shell=True, stdout=open(self.log_file_path, "w"), **kwargs)
 
     def get_task_status(self):
-        process = subprocess.Popen(['tail', '-n', '30', self.log_file_path], stdout=subprocess.PIPE)
+        process = subprocess.Popen(['tail', '-n', '20', self.log_file_path], stdout=subprocess.PIPE)
         stdout = process.communicate()[0]
         if stdout:
             return stdout.decode("utf-8")

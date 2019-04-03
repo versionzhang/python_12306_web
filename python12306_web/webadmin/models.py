@@ -155,7 +155,11 @@ class BuyTasks(BaseModel):
     name = models.CharField(verbose_name="购票任务名称", max_length=30, unique=True)
     proxy = models.ForeignKey(ProxyConfig, blank=True, null=True, on_delete=models.SET_NULL)
     config = models.ForeignKey(TotalConfig, on_delete=models.CASCADE)
-    status = models.CharField(verbose_name="任务状态", max_length=40)
+    status = models.CharField(verbose_name="任务状态", max_length=40,
+                              choices=[
+                                  ("pending", "未运行"),
+                                  ("running", "运行中")
+                              ])
     pid = models.PositiveIntegerField(verbose_name="pid,进程号", blank=True, null=True)
 
     def __str__(self):

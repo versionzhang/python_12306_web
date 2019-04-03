@@ -2,8 +2,7 @@ from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
 from webadmin.models import PresaleConfig, BasicConfig, AutoCodeAccount, \
-    TrainAccount, EmailConfig, TotalConfig
-
+    TrainAccount, EmailConfig, TotalConfig, BuyTasks
 
 
 class PresaleConfigSerializers(ModelSerializer):
@@ -48,3 +47,18 @@ class TotalConfigSerializers(ModelSerializer):
     class Meta:
         model = TotalConfig
         exclude = ('c_time', 'm_time', 'name')
+
+
+class BuyTasksSerializers(ModelSerializer):
+    config = TotalConfigSerializers()
+    proxy = serializers.SerializerMethodField('get_proxy_url', source='proxy')
+
+    class Meta:
+        model = BuyTasks
+        fields = "__all__"
+
+    def get_proxy_url(self, obj):
+        if obj.proxy:
+            return obj.proxy.proxy_url
+        else:
+            return ''
