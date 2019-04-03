@@ -38,7 +38,7 @@
             <el-main>
                 <el-table
                         :data="tableData"
-                        style="width: 100%" ref="table">
+                        style="width: 100%" @expand-change="expandChange" ref="table">
                     <el-table-column type="expand">
                         <template slot-scope="props">
                             <el-form label-position="left" width="100%" class="task-table-expand">
@@ -124,7 +124,8 @@
             data: function () {
                 return {
                         activeIndex: '1',
-                    tableData: []
+                        tableData: [],
+                        logmsg: ""
                     };
             },
             mounted: function() {
@@ -137,8 +138,24 @@
                         that.tableData = data;
                     }
                 });
+                setInterval(function () {
+                    if (that.$refs.table.store.states.expandRows.length > 0) {
+                        var data = that.$refs.table.store.states.expandRows[0];
+                        var msg = that.handleRefresh(data);
+                        for (var i = 0; i < that.tableData.length; i++) {
+                            if(that.tableData[i].id === data.id) {
+                                that.tableData[i].log = that.logmsg;
+                            }
+                        }
+                    }
+                }, 5000);
             },
             methods: {
+                expandChange(row, expandedRows) {
+                    if (expandedRows.length > 1) {
+                        expandedRows.shift()
+                    }
+                },
                 handleSelect(key, keyPath) {
                 },
                 handleStart(row) {
@@ -193,7 +210,8 @@
                         success: function (data) {
                             if (data.status == 0) {
                                 row.log = data.msg;
-                                }
+                                that.logmsg = data.msg;
+                            }
                         }
                     });
                 },

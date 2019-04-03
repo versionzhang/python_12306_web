@@ -52,10 +52,14 @@ class TotalConfigSerializers(ModelSerializer):
 class BuyTasksSerializers(ModelSerializer):
     config = TotalConfigSerializers()
     proxy = serializers.SerializerMethodField('get_proxy_url', source='proxy')
+    log = serializers.SerializerMethodField('get_log_string')
 
     class Meta:
         model = BuyTasks
         fields = "__all__"
+
+    def get_log_string(self, instance):
+        return ""
 
     def get_proxy_url(self, obj):
         if obj.proxy:
