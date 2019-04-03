@@ -215,6 +215,7 @@
                 },
                 handleRefresh(row) {
                     this.$refs.table.toggleRowExpansion(row, true);
+                    that = this;
                     $.ajax({
                         type: 'GET',
                         url: 'webadmin/tasks/' + row.id + '/tasks_logs/',
@@ -224,9 +225,16 @@
                             xhr.setRequestHeader("X-CSRFToken", csrftoken);
                         },
                         success: function (data) {
-                            if (data.status == 0) {
+                            if (data.status === 0) {
                                 row.log = data.msg;
                                 that.logmsg = data.msg;
+                            } else if(data.status === -2) {
+                                that.$alert(data.msg, '提示信息', {
+                                    confirmButtonText: '确定',
+                                    callback: action => {
+                                        window.location.reload(true);
+                                    }
+                                });
                             }
                         }
                     });

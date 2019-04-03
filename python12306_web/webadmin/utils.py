@@ -2,6 +2,7 @@ import os
 import platform
 import subprocess
 
+import psutil
 from slugify import slugify
 from rest_framework.renderers import JSONRenderer
 
@@ -61,9 +62,17 @@ class TasksManagerUtil(object):
             ), shell=True, stdout=open(self.log_file_path, "w"), **kwargs)
 
     def get_task_status(self):
-        process = subprocess.Popen(['tail', '-n', '20', self.log_file_path], stdout=subprocess.PIPE)
-        stdout = process.communicate()[0]
-        if stdout:
-            return stdout.decode("utf-8")
-        else:
-            return ""
+        if self.task_obj.pid:
+            if psutil.pid_exists(self.task_obj.pid):
+                process = subprocess.Popen(['tail', '-n', '20', self.log_file_path], stdout=subprocess.PIPE)
+                stdout = process.communicate()[0]
+                if stdout:
+                    return 0, stdout.decode("utf-8")
+                else:
+                    return -1, ""
+            else:
+                self.task_obj.pid = None
+                self.task_obj.status = "pending"
+                self.task_obj.save()
+                return -2, ""
+        return -1, ""
