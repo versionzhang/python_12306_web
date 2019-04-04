@@ -32,9 +32,10 @@ location = lambda x: os.path.join(
 SECRET_KEY = 'd6o=c3z272y+!fz^syr5f1r!u%4140tu%t7r6j09hy_&rm!o06'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool('DEBUG', default=True)
 
 ALLOWED_HOSTS = []
+ALLOWED_HOSTS.extend(env.list("ALLOW_HOSTS", []))
 
 
 # Application definition
