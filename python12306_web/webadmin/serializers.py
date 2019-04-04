@@ -41,7 +41,7 @@ class TotalConfigSerializers(ModelSerializer):
     presale_config = PresaleConfigSerializers(required=False)
     basic_config = BasicConfigSerializers()
     train_account = TrainAccountSerializers()
-    auto_code_account = AutoCodeAccountSerializers(required=False)
+    auto_code_account_ruokuai = AutoCodeAccountSerializers(required=False, source='auto_code_account')
     email_config = EmailConfigSerializers(required=False)
 
     class Meta:
