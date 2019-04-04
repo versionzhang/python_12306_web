@@ -13,6 +13,7 @@ py12306 = {git = "https://github.com/versionzhang/python_12306"}
 whitenoise = "*"
 django-widget-tweaks = "*"
 psutil = "*"
+django = "*"
 
 [dev-packages]
 
