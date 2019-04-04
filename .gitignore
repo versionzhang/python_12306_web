@@ -42,3 +42,4 @@ config.yaml
 
 # public
 python12306_web/public
+python12306_web/uwsgi_conf.ini
