@@ -19,9 +19,6 @@ from .utils import TasksManagerUtil
 class HomepageView(TemplateView):
     template_name = "homepage.html"
 
-    def get_context_data(self, **kwargs):
-        return {"test": '{\n  "origin": "172.96.239.57, 172.96.239.57"\n}\n'}
-
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
