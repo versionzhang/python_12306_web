@@ -18,6 +18,7 @@ django-better-admin-arrayfield = "*"
 requests = {extras = ["socks"],version = "*"}
 djangorestframework = "*"
 uwsgi = "*"
+urllib3 = "*"
 
 [dev-packages]
 
